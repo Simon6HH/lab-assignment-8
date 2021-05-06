@@ -1,65 +1,72 @@
-//index is N of person
-//trust[N][index] is whether i trusts j or not
-//if(trust[i][j] == 1) : i trusts j
-//person 1 is index 0...
-
 public class Judge {
 
-    int[][] trust;
+    int[][] trust; /** Global trust double array variable **/
+    int[][] n; /** Global m double array variable **/
 
-    int[][] m;
-
-    public Judge(int[][] trust){
+    public Judge(int[][] trust) { /** Judge contructor**/
         this.trust = trust;
     }
 
-    public void init(int[][] trust){
-        for(int i = 0; i < trust.length; i++){
-            m[trust[i][0]-1][trust[i][1]-1] = 1;
+    public void in(int[][] trust) { /** loops through to see who is in it **/
+        for (int i = 0; i < trust.length; i++) {
+            n[trust[i][0]-1][trust[i][1]-1] = 1;
         }
     }
 
-
-    public int findJudge (int N, int [][] trust){
-        m = new int[N][N];
-        init(trust);
-        print(m);
-        int judge = -1;
-
-        for(int j = 0; j < N; j++){// trust[i][j] means does i trust j? 1 = yes
-            for(int i =0; i < N; i++){// does every i trust this j?
-                if(i != j)//exception case: i doesn't need to trust itself
-                {
-                    judge = j+1;
-                    if(m[i][j] != 1) {//then j is not trusted by i{
-                        judge = -1;
-                        break;//move on to next j
-                    }
-
-                }
-            }
-
-            if(judge != -1){//now check if judge trusts anyone
-                for(int l = 0; l<N; l++){
-                    if(m[judge-1][l] == 1) {//if the judge trusts anyone it is not the judge anymore
-                        judge = -1;
-                        break;
-                    }
-                    return judge;
-                }
-            }
-        }
-
-        return judge;
-    }
-
-    public void print(int[][] m){
-        for(int x[] : m) {
-            for (int y : x) {
-                System.out.print(" " + y + " ");
+    public void NbyNDesign(int[][] trust){ /** interface to see whos who and who trusts who **/
+        for (int i[] : trust) {
+            for (int j : i) {
+                System.out.print(" [" + j + "] ");
             }
             System.out.println();
         }
     }
 
+
+    public int findJudge(int N, int [][] trust) { /** N is number of people in the town, trust is the trust array**/
+        n = new int[N][N];
+        int judge = -1;
+        in(trust); /** calls in it method **/
+        NbyNDesign(n); /** calls design method **/
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                if (j != i) { /** exception case testing if j is a judge himself **/
+                    judge = i+1;
+                    if (n[j][i] != 1) {
+                        judge = -1;
+                        break; /** if they don't equal 1, move on **/
+                    }
+                }
+            }
+            if (judge != -1) { /** checks if judge trusts anyone **/
+                for (int b = 0; b < N; b++) {
+                    if (n[judge-1][b] == 1) {
+                        judge = -1;
+                        break;
+                    }
+                    System.out.println("Label of Town Judge: ");
+                    return judge;
+                }
+            }
+        }
+        return judge;
+    }
+
+    public static void main(String[] args) { /** main test **/
+        int[][] trust = new int[][] {{1,2}};
+        int[][] testTWO = new int[][] {{1,3},{2,3}};
+        int[][] testTHREE = new int[][] {{1,3},{2,3},{3,1}};
+        int[][] testFOUR = new int[][] {{1,2},{2,3}};
+        int[][] testFIVE = new int[][] {{1,3},{1,4},{2,3},{2,4},{4,3}};
+
+        Judge judge = new Judge(trust);
+
+        System.out.println(judge.findJudge(2,trust));
+        System.out.println(judge.findJudge(3,testTWO));
+        System.out.println(judge.findJudge(3,testTHREE));
+        System.out.println(judge.findJudge(3,testFOUR));
+        System.out.println(judge.findJudge(4,testFIVE));
+
+    }
 }
